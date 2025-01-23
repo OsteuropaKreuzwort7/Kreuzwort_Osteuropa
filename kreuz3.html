@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kreuzworträtsel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        .crossword-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 1;
+            transition: opacity 1s ease-in-out;
+            padding: 10px;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-size: 1.8em;
+            color: #444;
+        }
+
+        .grid {
+            display: grid;
+            gap: 2px;
+            background-color: grey;
+            margin: 20px 0;
+            width: 200%;
+            max-width: 600px;
+            aspect-ratio: 1 / 1;
+        }
+
+        .cell {
+            background-color: white;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            border: none;
+            outline: none;
+            box-sizing: border-box;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cell:focus {
+            background-color: #3c3f96;
+        }
+
+        .cell.black {
+            background-color: grey;
+        }
+
+        .clues {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .clues h4 {
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .clues ul {
+            list-style-type: none;
+            padding: 0;
+            font-size: 1em;
+        }
+
+        .clues ul li {
+            margin: 5px 0;
+        }
+
+        @media (max-width: 600px) {
+            .grid {
+                max-width: 300px;
+                gap: 1px;
+            }
+
+            .cell {
+                font-size: 1em;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .clues h4 {
+                font-size: 1em;
+            }
+
+            .clues ul {
+                font-size: 0.9em;
+            }
+        }
+    .textbox-wrapper {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+
+    .textbox {
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        font-size: 1.2em;
+        font-weight: bold;
+        border: none;
+        outline: none;
+        box-sizing: border-box;
+    }
+
+    .textbox[readonly] {
+        background-color: blue;
+        //color: transparent;
+        pointer-events: none;
+    }
+
+    .textbox:focus {
+        background-color: #3c3f96;
+        color: white;
+    }
+
+    .number {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        font-size: 0.7em;
+        color: black;
+        pointer-events: none; /* Verhindert Interaktionen */
+    }
+    </style>
+</head>
+<body>
+    <div class="crossword-container" id="crosswordContainer">
+        <h1>Kreuzworträtsel: Osteuropa</h1>
+        <div class="grid" id="grid">
+            <!-- Grid cells will be generated here -->
+        </div>
+
+        <div class="clues" id="clues">
+            <!-- Clues will be generated here -->
+        </div>
+    </div>
+
+    <script>
+        const crosswordPuzzles = [
+            {
+                gridSize: 20,
+                words: [
+                    [0, 14, 'down', 'HUNYADI'],
+                    [6, 3, 'across', 'DERSCHRECKLICHE'],
+                    [7, 1, 'down', 'KRIMKRIEG'],
+                    [8, 4, 'down', 'HUS'],
+                    [11, 8, 'across', 'ROMANOW'],
+                    [9, 0, 'across', 'LITAUEN'],
+                    [4, 9, 'down', 'PERESTROIKA'],
+                    [16, 4, 'across', 'POLEN'],
+                    [3, 6, 'down', 'KONSTANTINOPEL'],
+                    [0, 17, 'down', 'SANKTPETERSBURG'],
+                    [11, 11, 'down', 'AMSELFELD'],
+                    [8, 12, 'down', 'BRAN'],
+                    [4, 2, 'across', 'KREWO'],
+                    [2, 7, 'across', 'MONGOLEN'],
+                    [11, 14, 'down', 'WOIWODE'],
+                ],
+                clues: {
+                    across: [
+                        "2. Epitheton des 1. russichen Zaren (2 Wörter)",
+                        "5. Welche Dynastie beherrschte Russland vor der Revolution 1917?",
+                        "6. Welche osteuropaeische Nation erklärte als erste ihre Unabhaengigkeit in der Sowjetunion?",
+                        "8. Welches Land wurde durch den Hitler-Stalin-Pakt zwischen dem DR und der SU aufgeteilt?",
+                        "13. Wo wurde 1385 die Personalunion zwischen Polen und Litauen beschlossen?",
+                        "14. Welches Volk eroberte 1241 Krakan?"
+                    ],
+                    down: [
+                        "1. Welcher ungarische Nationalheld kaempfte im 15. Jh. gegen das Osmanische Reich?",
+                        "3. Welcher Krieg ereignete sich von 1853-1856 in der Schwarzmeerregion?",
+                        "4. Tschechischer Reformator (Jan...)",
+                        "7. Von Gorbatschow in den 1980er-Jahren in der SU eingeleiteter Reformprozess",
+                        "9. Hauptstadt des Byzantinischen Reiches",
+                        "10. Ehemalige russische Hauptstadt (2 Wörter)",
+                        "11. Beruehmtes Schlachtfeld im Kosovo",
+                        "12. Historisches Dracula- Schloss",
+                        "15. Slavischer Herrschertitel"
+                    ]
+                }
+            },
+            {
+                gridSize: 18,
+                words: [
+                    [9, 2, 'across', 'DONAU'],
+                    [12, 5, 'across', 'DNIPRO'],
+                    [0, 14, 'down', 'URAL'],
+                    [1, 16, 'down', 'BELGRAD'],
+                    [0, 9, 'across', 'VILNIUS'],
+                    [3, 5, 'down', 'NESSEBAR'],
+                    [8, 3, 'down', 'MOLDAU'],
+                    [3, 0, 'across', 'BALKAN'],
+                    [5, 5, 'across', 'SCHWARZERBERG'],
+                    [14, 9, 'across', 'DAGO'],
+                    [5, 14, 'down', 'BOSPORUS'],
+                    [0, 1, 'down', 'BANAT'],
+                    [2, 9, 'across', 'LADOGASEE'],
+                    [4, 9, 'down', 'KALININGRAD'],
+                    [4, 12, 'down', 'LEMBERG']
+                ],
+                clues: {
+                    across: [
+                        "1. Fluss durch Budapest",
+                        "2. Fluss in der Ukraine",
+                        "5. Litauische Hauptstadt",
+                        "8. Südosteuropäische Bergkette",
+                        "9. Übersetzung von Montenegro (2 Wörter)",
+                        "10. Estische Insel (D...)",
+                        "13. Größter See Europas"
+                    ],
+                    down: [
+                        "3. Östlichstes Gebirge Europas",
+                        "4. Serbische Hauptstadt",
+                        "6. Urlaubsort and Bulgariens Küste",
+                        "7. Land zwischen Rumänien und der Ukraine",
+                        "11. Meerenge bei Istanbul",
+                        "12. Region an der Grenze Rumäniens, Ungarns, Serbiens",
+                        "14. Russiche Exklave an der Ostsee",
+                        "15. Deutscher Name der Stadt Lwiw"
+                    ]
+                }
+            },
+            {
+                gridSize: 20,
+                words: [
+                    [0, 0, 'across', 'CHOPIN'],
+                    [2, 3, 'across', 'KALINKA'],
+                    [4, 6, 'down', 'BASILIUSKATHEDRALE'],
+                    [6, 8, 'down', 'GULASCH'],
+                    [1, 1, 'across', 'SARMA'],
+                    [5, 2, 'across', 'SCHWANENSEE'],
+                    [0, 0, 'across', 'IWANKUPALA'],
+                    [2, 3, 'down', 'MATROSCHKA'],
+                    [4, 6, 'down', 'BALAGAN'],
+                    [6, 8, 'down', 'KANTELE'],
+                    [1, 1, 'across', 'SCHULDUNDSUEHNE'],
+                    [5, 2, 'across', 'TOLSTOI']
+                    [0, 0, 'down', 'IKONE'],
+                    [2, 3, 'across', 'TSCHAIKOWSKI'],
+                    [2, 3, 'down', 'KYRILLISCH']
+                ],
+                clues: {
+                    across: [
+                        "1. Polnischer Komponist",
+                        "2. Berühmtes russisches Volkslied",
+                        "5. Auf dem Balkan beliebte Speise aus gefüllten Weinblättern",
+                        "6. Russiches Ballettstück",
+                        "7. Slavisches Fest zur Sommersonnenwende (2 Wörter)",
+                        "11. Roman von Dostojewski (3 Wörter)",
+                        "12. Autor von ,,Krieg und Frieden''",
+                        "14. Komponist Pjotr Iljitsch..."
+                    ],
+                    down: [
+                        "3. Moskauer Kathedrale mit bunten Zwiebeltürmen (2 Wörter)",
+                        "4. Ungarischer Fleischeintopf",
+                        "8. Ineinandersteckbare bunte Holzfigur",
+                        "9. Russische Puppentheaterform",
+                        "10. In Nordosteuropa verbreitete Kastenzither",
+                        "13. Heiligenbild in der orthodoxen Kirche",
+                        "15. Buchstabenschrift in Osteuropa"
+                    ]
+                }
+            }
+        ];
+
+        let currentPuzzleIndex = 0;
+
+        function loadCrossword(puzzleIndex) {
+    const { words, clues, gridSize } = crosswordPuzzles[puzzleIndex];
+    const grid = document.getElementById('grid');
+    const cluesContainer = document.getElementById('clues');
+
+    grid.innerHTML = ''; // Clear previous grid
+    cluesContainer.innerHTML = ''; // Clear previous clues
+
+    // Update grid size dynamically
+    grid.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+    grid.style.gridTemplateRows = `repeat(${gridSize}, 1fr)`;
+
+    // Create grid cells
+    for (let i = 0; i < gridSize; i++) {
+        for (let j = 0; j < gridSize; j++) {
+            const wrapper = document.createElement('div');
+            wrapper.classList.add('textbox-wrapper');
+
+            const cell = document.createElement('input');
+            cell.type = 'text';
+            cell.maxLength = 1;
+            cell.classList.add('cell');
+            cell.dataset.row = i;
+            cell.dataset.col = j;
+            cell.style.backgroundColor = 'black';
+            cell.readOnly = true; // Default to read-only
+
+            wrapper.appendChild(cell);
+            grid.appendChild(wrapper);
+        }
+    }
+
+    // Populate words into the grid
+    words.forEach(([row, col, direction, answer], index) => {
+        const letters = answer.split('');
+        const isAcross = direction === 'across';
+
+        // Add number indicator to the first cell of the word
+        const firstCellWrapper = grid.children[row * gridSize + col];
+        if (firstCellWrapper) {
+            const marker = document.createElement('span');
+            marker.classList.add('number');
+            marker.textContent = index + 1; // Add number
+            firstCellWrapper.appendChild(marker);
+        }
+
+        // Populate the word into the grid
+        letters.forEach((letter, i) => {
+            const cellRow = isAcross ? row : row + i;
+            const cellCol = isAcross ? col + i : col;
+            const cellWrapper = grid.children[cellRow * gridSize + cellCol];
+            const cell = document.querySelector(`.cell[data-row='${cellRow}'][data-col='${cellCol}']`);
+            if (cell) {
+                cell.dataset.answer = letter;
+                cell.readOnly = false;
+                cell.style.backgroundColor = 'white';
+            }
+        });
+    });
+
+    // Generate clues
+    const acrossClues = document.createElement('div');
+acrossClues.innerHTML = `<h4>Waagerecht</h4><ul>${clues.across.map(clue => `<li>${clue}</li>`).join('')}</ul>`;
+cluesContainer.appendChild(acrossClues);
+
+const downClues = document.createElement('div');
+downClues.innerHTML = `<h4>Senkrecht</h4><ul>${clues.down.map(clue => `<li>${clue}</li>`).join('')}</ul>`;
+cluesContainer.appendChild(downClues);
+
+}
+
+        function isPuzzleComplete() {
+            const cells = document.querySelectorAll('.cell[data-answer]');
+            return Array.from(cells).every(cell => cell.value.toUpperCase() === cell.dataset.answer);
+        }
+
+        function checkCompletion() {
+if (isPuzzleComplete()) {
+        const crosswordContainer = document.getElementById('crosswordContainer');
+
+        crosswordContainer.style.opacity = '0'; // Fade out
+
+        setTimeout(() => {
+            currentPuzzleIndex++;
+            if (currentPuzzleIndex < crosswordPuzzles.length) {
+                loadCrossword(currentPuzzleIndex);
+                crosswordContainer.style.opacity = '1'; // Fade in
+            } else {
+                alert('Du hast alle Kreuzworträtsel gelöst!');
+                crosswordContainer.style.opacity = '1'; // Reset opacity
+            }
+        }, 1000); // Wait for fade-out effect
+    }
+}
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCrossword(currentPuzzleIndex);
+
+            document.getElementById('grid').addEventListener('input', () => {
+                checkCompletion();
+            });
+        });
+    </script>
+</body>
+</html>
